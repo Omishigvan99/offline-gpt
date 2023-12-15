@@ -18,9 +18,16 @@ const createWindow = () => {
 
     // and load the index.html of the app.
     mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    console.log(MAIN_WINDOW_WEBPACK_ENTRY);
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
+
+    // Handle page reloads in Electron
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        event.preventDefault();
+        mainWindow.loadURL(url);
+    });
 };
 
 // This method will be called when Electron has finished
