@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import FileUploader from './FileUploader.jsx';
+import FileUploaderView from './FileUploaderView.jsx';
 
 const fileTypes = ['pdf'];
 
-const DragDrop = ({ setIsUploaded = () => {} }) => {
+const DragDropView = ({ setIsUploaded = () => {} }) => {
     const [file, setFile] = useState(null);
+    const [textAreaValue, setTextAreaValue] = useState('');
+    const handleTextAreaChange = (event) => {
+        setTextAreaValue(event.target.value);
+    };
 
     const handleFileChange = (selectedFile) => {
         setFile(selectedFile);
         selectedFile && setIsUploaded(true);
+        textAreaValue && setIsUploaded(true);
         console.log('File selected:', selectedFile);
     };
 
@@ -18,7 +23,6 @@ const DragDrop = ({ setIsUploaded = () => {} }) => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
                 minHeight: '90vh',
                 padding: '20px',
                 borderRadius: '10px',
@@ -28,7 +32,21 @@ const DragDrop = ({ setIsUploaded = () => {} }) => {
             }}
         >
             <h1 style={{ marginBottom: '20px' }}>Drag and Drop Files</h1>
-            <FileUploader onFileChange={handleFileChange} fileTypes={fileTypes} />
+            <FileUploaderView onFileChange={handleFileChange} fileTypes={fileTypes} />
+
+            <textarea
+                style={{
+                    marginTop: '20px',
+                    width: '100%',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    border: '1px solid #ccc',
+                    resize: 'vertical',
+                }}
+                placeholder='Type your text here...'
+                value={textAreaValue}
+                onChange={handleTextAreaChange}
+            />
             {file && (
                 <div style={{ marginTop: '20px', width: '100%' }}>
                     <h3>File Details:</h3>
@@ -41,4 +59,4 @@ const DragDrop = ({ setIsUploaded = () => {} }) => {
     );
 };
 
-export default DragDrop;
+export default DragDropView;

@@ -1,28 +1,28 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-
-import { Layout } from 'antd';
-import DragDrop from './DragDrop.jsx';
-import Chat from './Chat.jsx';
-import InnerComponent from '../InnerComponent.jsx';
-const { Content } = Layout;
+import DragDropView from '../../views/dragAndDropView/DragDropView.jsx';
+import ChatView from '../../views/chatView/ChatView.jsx';
+import SumOuterView from '../../views/SumOuterView.jsx';
 
 const MainLayout = ({ setIsUploaded = () => {} }) => {
     return (
-        <Content
+        <div
             style={{
-                padding: '0 24px',
+                padding: '24px',
                 minHeight: 500,
                 flexGrow: 1,
             }}
         >
             <Routes>
-                <Route path='/main_window' element={<DragDrop setIsUploaded={setIsUploaded} />} />
-                <Route path='/main_window/chat' element={<Chat />} />
-                <Route path='/main_window/summarize' element={<InnerComponent />} />{' '}
-                <Route path='/main_window/grammar' element={<InnerComponent />} />
+                <Route
+                    path='/main_window'
+                    element={<DragDropView setIsUploaded={setIsUploaded} />}
+                />
+                <Route path='/main_window/chat' element={<ChatView />} />
+                <Route path='/main_window/summarize' element={<SumOuterView />} />{' '}
+                <Route path='/main_window/grammar' element={<SumOuterView />} />
             </Routes>
-        </Content>
+        </div>
     );
 };
 

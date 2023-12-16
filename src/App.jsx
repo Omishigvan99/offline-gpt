@@ -1,13 +1,13 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import MainContainer from './components/MainContainer.jsx';
+import AppContainer from './components/AppContainer.jsx';
 
 function App() {
     return (
         <BrowserRouter>
             <div className='App'>
-                <MainContainer />
+                <AppContainer />
             </div>
         </BrowserRouter>
     );

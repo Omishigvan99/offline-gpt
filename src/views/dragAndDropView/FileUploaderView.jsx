@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const FileUploader = ({ onFileChange, fileTypes }) => {
+const FileUploaderView = ({ onFileChange, fileTypes }) => {
     const [isDragging, setIsDragging] = useState(false);
 
     const handleDragEnter = (e) => {
@@ -82,4 +82,4 @@ const FileUploader = ({ onFileChange, fileTypes }) => {
     );
 };
 
-export default FileUploader;
+export default FileUploaderView;

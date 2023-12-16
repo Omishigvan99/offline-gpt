@@ -51,6 +51,10 @@
     max-height: 1000px;
 }
 
+.message-sender {
+    font-weight: 300;
+}
+
 .chat-footer {
     display: flex;
     justify-content: space-between;
@@ -58,6 +62,7 @@
     background-color: #f5f5f5;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    max-height: 50px;
 }
 
 .chat-footer input {
@@ -77,11 +82,17 @@
     background-color: #1f1d2b;
     color: white;
     border: none;
-    padding: 8px 16px;
+    padding: 8px;
     border-radius: 4px;
     cursor: pointer;
     flex-shrink: 0;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+}
+.chat-footer button img {
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .chat-footer button:hover {

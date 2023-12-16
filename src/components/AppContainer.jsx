@@ -3,15 +3,15 @@ import Sidebar from './sidebar/Sidebar.jsx';
 import MainLayout from './main-layout/MainLayout.jsx';
 import '../App.css';
 
-const MainContainer = () => {
+const AppContainer = () => {
     const [isUploaded, setIsUploaded] = useState(false);
 
     return (
-        <div className='mainContainer'>
+        <div className='app-Container'>
             <Sidebar isUploaded={isUploaded} />
             <MainLayout setIsUploaded={setIsUploaded} />
         </div>
     );
 };
 
-export default MainContainer;
+export default AppContainer;

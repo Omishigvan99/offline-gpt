@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import './main-layout/ChatWindow.css';
+import '../views/chatView/ChatView.css';
 import { useLocation } from 'react-router-dom';
 import { RingLoader } from 'react-spinners';
 
-const InnerComponent = () => {
+const SumOuterView = () => {
     const location = useLocation();
     const [isLoading, setIsLoading] = useState(false);
 
@@ -47,4 +47,4 @@ const InnerComponent = () => {
     );
 };
 
-export default InnerComponent;
+export default SumOuterView;
