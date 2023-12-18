@@ -93,3 +93,6 @@ out/
 
 # ML Model
 ml-models/
+
+#misc
+*.zip
