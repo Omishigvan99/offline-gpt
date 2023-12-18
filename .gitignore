@@ -90,3 +90,6 @@ typings/
 
 # Electron-Forge
 out/
+
+# ML Model
+ml-models/

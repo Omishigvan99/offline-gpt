@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FileUploaderView from './FileUploaderView.jsx';
 
 const fileTypes = ['pdf'];
@@ -16,6 +16,18 @@ const DragDropView = ({ setIsUploaded = () => {} }) => {
         textAreaValue && setIsUploaded(true);
         console.log('File selected:', selectedFile);
     };
+
+    //effect for handling file change (sending file to backend)
+    useEffect(() => {
+        if (!file) return;
+
+        window.electron.ipcRenderer.send(
+            'file-upload',
+            JSON.stringify({
+                file: file.path,
+            }),
+        );
+    }, [file]);
 
     return (
         <div

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatView.css';
 import send from '../../assets/images/send.png';
+
 const ChatView = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
@@ -20,14 +21,14 @@ const ChatView = () => {
             setNewMessage('');
 
             setTimeout(() => {
-                const botReplies = ['I am a bot. This is a reply.'];
+                // const botReplies = ['I am a bot. This is a reply.'];
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    ...botReplies.map((reply) => ({
-                        text: reply,
-                        sender: 'bot',
-                        visible: true,
-                    })),
+                    // ...botReplies.map((reply) => ({
+                    //     text: reply,
+                    //     sender: 'bot',
+                    //     visible: true,
+                    // })),
                 ]);
             }, 1000);
 
@@ -39,10 +40,29 @@ const ChatView = () => {
                     })),
                 );
             }, 50);
+
+            // send msg to backend
+            window.electron.ipcRenderer.send(
+                'message',
+                JSON.stringify({
+                    message: newMessage,
+                }),
+            );
         } else {
             inputRef.current.focus();
         }
     };
+
+    //effect for handling message received from backend
+    useEffect(() => {
+        window.electron.ipcRenderer.on('message', (arg) => {
+            const { data } = JSON.parse(arg);
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { text: data, sender: 'bot', visible: true },
+            ]);
+        });
+    }, []);
 
     return (
         <div
