@@ -1,14 +1,12 @@
 /* eslint-disable no-undef */
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-    app.quit();
-}
+//global variable for main window
+let mainWindow = null;
 
-const createWindow = () => {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
+//function for creating main window
+function createMainWindow() {
+    let win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
@@ -16,34 +14,72 @@ const createWindow = () => {
         },
     });
 
-    // and load the index.html of the app.
-    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+    win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-    // Open the DevTools.
-    mainWindow.webContents.openDevTools();
-};
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
-
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
-app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
+    // open dev tools if run in dev mode
+    if (process.env.NODE_ENV === 'development') {
+        win.webContents.openDevTools();
     }
+
+    win.maximize();
+    return win;
+}
+
+app.whenReady().then(() => {
+    // create main window when electron is ready
+    mainWindow = createMainWindow();
+
+    // macOS only
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    });
 });
 
-app.on('activate', () => {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow();
-    }
+// quit when all windows are closed, except on macOS
+app.on('window-all-closed', function () {
+    if (process.platform !== 'darwin') app.quit();
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
+//spawn child process of python script
+
+const { spawn } = require('child_process');
+
+let childProcess = spawn('python', ['./src/python/main.py']);
+
+childProcess.stdout.on('data', (data) => {
+    // console.log(data.toString());
+    let lines = data.toString().split(/\r?\n/);
+
+    lines.forEach((line) => {
+        if (line.trim() !== '') {
+            let jsonData = JSON.parse(line);
+
+            if (jsonData.type === 'message') {
+                mainWindow.webContents.send('message', JSON.stringify(jsonData));
+            }
+            console.log(jsonData);
+        }
+    });
+});
+
+childProcess.stderr.on('data', (data) => {
+    console.error(`stderr: ${data}`);
+});
+
+childProcess.on('close', (code) => {
+    console.log(`child process exited with code ${code}`);
+});
+
+childProcess.on('exit', (code) => {
+    console.log(`child process exited with code ${code}`);
+});
+
+ipcMain.on('file-upload', (event, arg) => {
+    data = JSON.parse(arg);
+    childProcess.stdin.write(data.file + '\n');
+});
+
+ipcMain.on('message', (event, arg) => {
+    data = JSON.parse(arg);
+    childProcess.stdin.write(data.message + '\n');
+});

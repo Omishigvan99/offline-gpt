@@ -1,0 +1,39 @@
+.loading-balls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+}
+
+.ball {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+    animation: bounce 1s infinite alternate linear;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(5px);
+    }
+    100% {
+        transform: translateY(10px);
+    }
+}
+
+.ball:nth-child(1) {
+    background-color: #fff;
+}
+
+.ball:nth-child(2) {
+    background-color: #3e3e43;
+}
+
+.ball:nth-child(3) {
+    background-color: #d2d8db;
+}
