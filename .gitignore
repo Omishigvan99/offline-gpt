@@ -90,3 +90,12 @@ typings/
 
 # Electron-Forge
 out/
+
+# ML Model
+ml-models/
+
+# misc
+*.pdf
+
+#misc
+*.zip

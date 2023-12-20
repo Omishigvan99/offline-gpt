@@ -1,12 +1,15 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import AppContainer from './components/AppContainer.jsx';
 
 function App() {
     return (
-        <div>
-            <h1>Hello this is Electron+React app created using electron-forge</h1>
-            {/* Insert your react containers and compnents here */}
-        </div>
+        <BrowserRouter>
+            <div className='App'>
+                <AppContainer />
+            </div>
+        </BrowserRouter>
     );
 }
 
@@ -14,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let container = document.getElementById('root');
     let root = createRoot(container);
     root.render(
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>,
+        // <React.StrictMode>
+        <App />,
+        // {/* </React.StrictMode>, */}
     );
 });
