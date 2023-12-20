@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import FileUploaderView from './FileUploaderView.jsx';
 
-const fileTypes = ['pdf'];
+const fileTypes = ['.pdf'];
 
-const DragDropView = ({ setIsUploaded = () => {} }) => {
+const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoading }) => {
     const [file, setFile] = useState(null);
     const [textAreaValue, setTextAreaValue] = useState('');
     const handleTextAreaChange = (event) => {
@@ -20,13 +20,13 @@ const DragDropView = ({ setIsUploaded = () => {} }) => {
     //effect for handling file change (sending file to backend)
     useEffect(() => {
         if (!file) return;
-
         window.electron.ipcRenderer.send(
             'file-upload',
             JSON.stringify({
                 file: file.path,
             }),
         );
+        // setIsLoading(true);
     }, [file]);
 
     return (
@@ -45,28 +45,28 @@ const DragDropView = ({ setIsUploaded = () => {} }) => {
         >
             <h1 style={{ marginBottom: '20px' }}>Drag and Drop Files</h1>
             <FileUploaderView onFileChange={handleFileChange} fileTypes={fileTypes} />
-
+            <div style={{ marginTop: '20px', width: '100%', minHeight: '95px' }}>
+                {file && (
+                    <>
+                        <h3>File Details:</h3>
+                        <p>Name: {file.name}</p>
+                    </>
+                )}
+            </div>
             <textarea
                 style={{
                     marginTop: '20px',
                     width: '100%',
+                    height: 'auto',
                     padding: '10px',
                     borderRadius: '8px',
                     border: '1px solid #ccc',
-                    resize: 'vertical',
+                    resize: 'none',
                 }}
                 placeholder='Type your text here...'
                 value={textAreaValue}
                 onChange={handleTextAreaChange}
             />
-            {file && (
-                <div style={{ marginTop: '20px', width: '100%' }}>
-                    <h3>File Details:</h3>
-                    <p>Name: {file.name}</p>
-                    <p>Type: {file.type}</p>
-                    <p>Size: {file.size} bytes</p>
-                </div>
-            )}
         </div>
     );
 };

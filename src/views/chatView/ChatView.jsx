@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatView.css';
 import send from '../../assets/images/send.png';
-
+import ChatLoader from '../../components/ui/chatLoader/ChatLoader.jsx';
 const ChatView = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [isChatLoading, setIsChatLoading] = useState(false);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
@@ -30,6 +31,7 @@ const ChatView = () => {
                     //     visible: true,
                     // })),
                 ]);
+                setIsChatLoading(true);
             }, 1000);
 
             setTimeout(() => {
@@ -89,6 +91,7 @@ const ChatView = () => {
                     ))}
 
                     <div ref={messagesEndRef} />
+                    {isChatLoading && <ChatLoader />}
                 </div>
                 <div className='chat-footer'>
                     <input

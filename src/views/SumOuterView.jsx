@@ -3,9 +3,8 @@ import '../views/chatView/ChatView.css';
 import { useLocation } from 'react-router-dom';
 import { RingLoader } from 'react-spinners';
 
-const SumOuterView = () => {
+const SumOuterView = ({ setIsLoading = () => {}, isLoading }) => {
     const location = useLocation();
-    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,24 +24,11 @@ const SumOuterView = () => {
     return (
         <div className='chat-window'>
             <div className='chat-header' style={{ padding: '17px' }}>
-                {location.pathname === '/summarize' ? 'Summarization' : 'Grammar Checking'}
+                {location.pathname === '/main_window/summarize'
+                    ? 'Summarization'
+                    : 'Grammar Checking'}
             </div>
-            <div
-                className='chat-body'
-                style={{
-                    display: isLoading && 'flex',
-                    justifyContent: isLoading && 'center',
-                    alignItems: isLoading && 'center',
-                }}
-            >
-                {isLoading ? (
-                    <div className='overlay'>
-                        <RingLoader color='#36D7B7' size={100} loading={isLoading} />
-                    </div>
-                ) : (
-                    <div>hello</div>
-                )}
-            </div>
+            <div className='chat-body'>{!isLoading && <div>hello</div>}</div>
         </div>
     );
 };
