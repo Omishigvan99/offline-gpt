@@ -15,6 +15,8 @@ from langchain.document_loaders import PyPDFLoader
 
 #globals
 history=[]
+summarizeHistory=[]
+grammarHistory=[]
 
 # function to chat with the bot
 def conversation_chat(query, chain, history):
@@ -29,10 +31,11 @@ def create_conversational_chain(vector_store):
     llm = LlamaCpp(
         streaming=True,
         model_path="./src/python/ml-models/harborwater-open-llama-3b-v2-wizard-evol-instuct-v2-196k-Q4_0.gguf",
-        temperature=0.75,
+        temperature=0.55,
         top_p=1,
         verbose=False,
         n_ctx=9096,
+        # min_new_tokens=800,
     )
 
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -74,22 +77,43 @@ def createChain(text):
     chain = create_conversational_chain(vector_store)
     return chain
 
+# function for summarizing the document
+def summarizeDocument(chain,text="summarize this document"):
+    conversation_chat(text, chain, summarizeHistory)
+
+# fucntion for grammar correction
+def grammarCorrection(chain,text="correct the grammar"):
+    conversation_chat(text, chain, grammarHistory)
+
+# function for chat
+def chat(chain,text):
+    conversation_chat(text, chain, history)
+
 #function to create chat thread
 def createChatThread(chain):
     global history
+
+    switch={
+        "summarize": summarizeDocument,
+        "chat": chat,
+        "grammar": grammarCorrection,
+        "exit": sys.exit,
+    }
+
+
     def target(chain):
+        print_json("message","ready for input")
         while True:
             inputText = input()
-            if(inputText=="exit"):
-                break
+            data=json.loads(inputText)
+            switch[data["type"]](chain,data["text"])
             
-            conversation_chat(inputText, chain, history)
-        
+                  
     thread=Thread(target=target,args=(chain,))
     return thread
 
 if __name__ == "__main__":
-    print_json("message","Hello, I am your summarization bot. How may i help you?")
+    print_json("message","process initiated")
     print_json("console",f"current directory: {os.getcwd()} ")
     print_json("console","Enter the pdf link to summarize")
     inputText = input()

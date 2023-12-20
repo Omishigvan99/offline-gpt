@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import FileUploaderView from './FileUploaderView.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const fileTypes = ['pdf'];
 
@@ -9,6 +10,8 @@ const DragDropView = ({ setIsUploaded = () => {} }) => {
     const handleTextAreaChange = (event) => {
         setTextAreaValue(event.target.value);
     };
+
+    let navigate = useNavigate();
 
     const handleFileChange = (selectedFile) => {
         setFile(selectedFile);
@@ -28,6 +31,23 @@ const DragDropView = ({ setIsUploaded = () => {} }) => {
             }),
         );
     }, [file]);
+
+    //registering event listener for file upload response
+    useEffect(() => {
+        window.electron.ipcRenderer.on('message', (arg) => {
+            let data = JSON.parse(arg);
+            if (data.data === 'ready for input') {
+                window.electron.ipcRenderer.send(
+                    'summarize',
+                    JSON.stringify({
+                        type: 'summarize',
+                        text: "Generate a detailed summary of the main ideas, arguments, and evidence presented in the given document. Pay special attention to the key concepts, supporting details, and the overall structure of the content. Provide a thorough analysis of the context's central themes and any implications discussed. Additionally, identify and summarize the author's perspective, addressing any potential counter arguments or alternative viewpoints presented. Strive for a comprehensive and nuanced summary that captures the essence of the entire context",
+                    }),
+                );
+                navigate('/main_window/summarize');
+            }
+        });
+    }, []);
 
     return (
         <div

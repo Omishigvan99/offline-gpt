@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let container = document.getElementById('root');
     let root = createRoot(container);
     root.render(
-        <React.StrictMode>
-            <App />
-        </React.StrictMode>,
+        // <React.StrictMode>
+        <App />,
+        // {/* </React.StrictMode>, */}
     );
 });

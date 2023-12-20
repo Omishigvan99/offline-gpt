@@ -45,7 +45,8 @@ const ChatView = () => {
             window.electron.ipcRenderer.send(
                 'message',
                 JSON.stringify({
-                    message: newMessage,
+                    type: 'chat',
+                    text: newMessage,
                 }),
             );
         } else {
