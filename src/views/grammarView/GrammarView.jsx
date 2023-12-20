@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import '../chatView/ChatView.css';
 import { useLocation } from 'react-router-dom';
-import { RingLoader } from 'react-spinners';
 import send from '../../assets/images/send.png';
 
-const GrammarView = () => {
+// eslint-disable-next-line react/prop-types
+const GrammarView = ({ setIsLoading = () => {}, isLoading }) => {
     const location = useLocation();
-    const [isLoading, setIsLoading] = useState(false);
     const [grammar, setGrammar] = useState('');
     const [data, setData] = useState();
 
@@ -41,14 +40,7 @@ const GrammarView = () => {
 
     useEffect(() => {
         console.log('second');
-        // window.electron.ipcRenderer.send(() => {
-        //     'message',
-        //         JSON.stringify({
-        //             type: 'grammar',
-        //             text: 'Please review the provided context for grammar and syntax errors, ensuring clarity and coherence in communication. Additionally, reformat the text to enhance readability, considering proper paragraph structure, punctuation usage, and overall flow. Address any awkward phrasing or ambiguity in the language. Provide suggestions for improvement where necessary, and aim for a polished and well-organized final version of the text',
-        //         });
-        // });
-    }, [location.pathname]);
+    }, []);
 
     return (
         <div className='chat-window'>
@@ -63,11 +55,7 @@ const GrammarView = () => {
                     alignItems: isLoading && 'center',
                 }}
             >
-                {isLoading ? (
-                    <div className='overlay'>
-                        <RingLoader color='#36D7B7' size={100} loading={isLoading} />
-                    </div>
-                ) : (
+                {!isLoading && grammar && (
                     <div
                         className='sumDisplay'
                         style={{
@@ -100,7 +88,7 @@ const GrammarView = () => {
                 <button
                     onClick={() => {
                         console.log(data);
-                        // window.electron.ipcRenderer.send('grammar', data);
+                        window.electron.ipcRenderer.send('grammar', data);
                     }}
                 >
                     <img src={send} />

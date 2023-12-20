@@ -1,11 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './ChatView.css';
 import send from '../../assets/images/send.png';
-
+import ChatLoader from '../../components/ui/chatLoader/ChatLoader.jsx';
 const ChatView = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const messagesEndRef = useRef(null);
+    const [isChatLoading, setIsChatLoading] = useState(false);
     const inputRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -21,15 +22,8 @@ const ChatView = () => {
             setNewMessage('');
 
             setTimeout(() => {
-                // const botReplies = ['I am a bot. This is a reply.'];
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    // ...botReplies.map((reply) => ({
-                    //     text: reply,
-                    //     sender: 'bot',
-                    //     visible: true,
-                    // })),
-                ]);
+                setMessages((prevMessages) => [...prevMessages]);
+                setIsChatLoading(true);
             }, 1000);
 
             setTimeout(() => {
@@ -63,6 +57,7 @@ const ChatView = () => {
                 { text: data, sender: 'bot', visible: true },
             ]);
         });
+        setIsChatLoading(false);
     }, []);
 
     return (
@@ -90,6 +85,7 @@ const ChatView = () => {
                     ))}
 
                     <div ref={messagesEndRef} />
+                    {isChatLoading && <ChatLoader />}
                 </div>
                 <div className='chat-footer'>
                     <input

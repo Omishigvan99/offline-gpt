@@ -42,7 +42,6 @@ export function runScript(mainWindow) {
     });
 
     ipcMain.on('message', (event, arg) => {
-        // let data = JSON.parse(arg);
         childProcess.stdin.write(arg + '\n');
     });
 
@@ -50,6 +49,11 @@ export function runScript(mainWindow) {
         childProcess.stdin.write(arg + '\n');
     });
 
+    registerGrammar();
+    registerOCR();
+}
+
+function registerGrammar() {
     ipcMain.on('grammar', (event, arg) => {
         console.log(arg);
         let childProcess = spawn('python', ['./src/python/grammar.py']);
@@ -71,5 +75,30 @@ export function runScript(mainWindow) {
         childProcess.on('exit', (code) => {
             console.log(`child process exited with code ${code}`);
         });
+    });
+}
+
+function registerOCR() {
+    ipcMain.on('ocr', (event, arg) => {
+        console.log(arg);
+        // let childProcess = spawn('python', ['./src/python/ocr.py']);
+
+        // childProcess.stdin.write(arg + '\n');
+
+        // childProcess.stdout.on('data', (data) => {
+        //     mainWindow.webContents.send('message', data.toString());
+        // });
+
+        // childProcess.stderr.on('data', (data) => {
+        //     console.error(`stderr: ${data}`);
+        // });
+
+        // childProcess.on('close', (code) => {
+        //     console.log(`child process exited with code ${code}`);
+        // });
+
+        // childProcess.on('exit', (code) => {
+        //     console.log(`child process exited with code ${code}`);
+        // });
     });
 }

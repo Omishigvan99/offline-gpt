@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import DragDropView from '../../views/dragAndDropView/DragDropView.jsx';
@@ -5,7 +6,7 @@ import ChatView from '../../views/chatView/ChatView.jsx';
 import SummaryView from '../../views/summaryView/SummaryView.jsx';
 import GrammarView from '../../views/grammarView/GrammarView.jsx';
 
-const MainLayout = ({ setIsUploaded = () => {} }) => {
+const MainLayout = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoading }) => {
     return (
         <div
             style={{
@@ -17,11 +18,26 @@ const MainLayout = ({ setIsUploaded = () => {} }) => {
             <Routes>
                 <Route
                     path='/main_window'
-                    element={<DragDropView setIsUploaded={setIsUploaded} />}
+                    element={
+                        <DragDropView
+                            setIsUploaded={setIsUploaded}
+                            setIsLoading={setIsLoading}
+                            isLoading={isLoading}
+                        />
+                    }
                 />
-                <Route path='/main_window/chat' element={<ChatView />} />
-                <Route path='/main_window/summarize' element={<SummaryView />} />
-                <Route path='/main_window/grammar' element={<GrammarView />} />
+                <Route
+                    path='/main_window/chat'
+                    element={<ChatView setIsLoading={setIsLoading} isLoading={isLoading} />}
+                />
+                <Route
+                    path='/main_window/summarize'
+                    element={<SummaryView setIsLoading={setIsLoading} isLoading={isLoading} />}
+                />
+                <Route
+                    path='/main_window/grammar'
+                    element={<GrammarView setIsLoading={setIsLoading} isLoading={isLoading} />}
+                />
             </Routes>
         </div>
     );

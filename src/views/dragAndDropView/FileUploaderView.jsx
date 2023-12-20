@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 
 const FileUploaderView = ({ onFileChange, fileTypes }) => {
@@ -78,6 +79,13 @@ const FileUploaderView = ({ onFileChange, fileTypes }) => {
             >
                 Drag and drop files here or click to select files
             </label>
+            <button
+                onClick={() => {
+                    window.electron.ipcRenderer.send('ocr', 'ping');
+                }}
+            >
+                clickme
+            </button>
         </div>
     );
 };

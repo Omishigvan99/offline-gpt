@@ -1,11 +1,11 @@
+/* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import '../chatView/ChatView.css';
 import { useLocation } from 'react-router-dom';
-import { RingLoader } from 'react-spinners';
+import CircleLoader from '../../components/ui/CircleLoader.jsx';
 
-const SummaryView = () => {
+const SummaryView = ({ setIsLoading = () => {}, isLoading }) => {
     const location = useLocation();
-    const [isLoading, setIsLoading] = useState(false);
     const [summary, setSummary] = useState('');
 
     useEffect(() => {
@@ -28,18 +28,8 @@ const SummaryView = () => {
             let { data } = JSON.parse(arg);
             setSummary(data);
         });
+        setIsLoading(false);
     }, []);
-
-    useEffect(() => {
-        console.log('second');
-        // window.electron.ipcRenderer.send(() => {
-        //     'message',
-        //         JSON.stringify({
-        //             type: 'grammar',
-        //             text: 'Please review the provided context for grammar and syntax errors, ensuring clarity and coherence in communication. Additionally, reformat the text to enhance readability, considering proper paragraph structure, punctuation usage, and overall flow. Address any awkward phrasing or ambiguity in the language. Provide suggestions for improvement where necessary, and aim for a polished and well-organized final version of the text',
-        //         });
-        // });
-    }, [location.pathname]);
 
     return (
         <div className='chat-window'>
@@ -54,12 +44,27 @@ const SummaryView = () => {
                     alignItems: isLoading && 'center',
                 }}
             >
-                {isLoading ? (
-                    <div className='overlay'>
-                        <RingLoader color='#36D7B7' size={100} loading={isLoading} />
+                {summary ? (
+                    <div
+                        className='sumDisplay'
+                        style={{
+                            backgroundColor: 'hsla(0, 0%, 96%, 0.826)',
+                            borderRadius: '8px',
+                            padding: '1px 10px',
+                        }}
+                    >
+                        <p
+                            style={{
+                                fontSize: '14px',
+                                lineHeight: '20px',
+                                textAlign: 'justify',
+                            }}
+                        >
+                            {summary}
+                        </p>
                     </div>
                 ) : (
-                    summary
+                    <CircleLoader/>
                 )}
             </div>
         </div>
