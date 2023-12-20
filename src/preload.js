@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
     ipcRenderer: {
         send: (channel, data) => {
+            console.log(data);
             ipcRenderer.send(channel, data);
         },
         on: (channel, func) => {

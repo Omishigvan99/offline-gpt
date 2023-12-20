@@ -49,4 +49,27 @@ export function runScript(mainWindow) {
     ipcMain.on('summarize', (event, arg) => {
         childProcess.stdin.write(arg + '\n');
     });
+
+    ipcMain.on('grammar', (event, arg) => {
+        console.log(arg);
+        let childProcess = spawn('python', ['./src/python/grammar.py']);
+
+        childProcess.stdin.write(arg + '\n');
+
+        childProcess.stdout.on('data', (data) => {
+            mainWindow.webContents.send('message', data.toString());
+        });
+
+        childProcess.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+
+        childProcess.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+
+        childProcess.on('exit', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+    });
 }
