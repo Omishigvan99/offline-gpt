@@ -3,7 +3,7 @@ import os
 import sys
 import json
 from threading import Thread
-
+from fpdf import FPDF
 #langchain imports
 from langchain.chains import ConversationalRetrievalChain
 from langchain.embeddings import HuggingFaceEmbeddings
@@ -34,8 +34,7 @@ def create_conversational_chain(vector_store):
         temperature=0.55,
         top_p=1,
         verbose=False,
-        n_ctx=9096,
-        # min_new_tokens=800,
+        n_ctx=15000,
     )
 
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
@@ -43,7 +42,7 @@ def create_conversational_chain(vector_store):
     chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         chain_type="stuff",
-        retriever=vector_store.as_retriever(search_kwargs={"k": 2}),
+        retriever=vector_store.as_retriever(search_kwargs={"k": 4}),
         memory=memory,
     )
     return chain
@@ -63,16 +62,17 @@ def loadPdf(path):
     return text
 
 #function to return a conversational chain
-def createChain(text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=20)
-    text_chunks = text_splitter.split_documents(text)
+def createChain(text,type):
 
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={"device": "cpu"},
     )
 
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20)
+    text_chunks = text_splitter.split_documents(text)
     vector_store = FAISS.from_documents(text_chunks, embedding=embeddings)
+ 
 
     chain = create_conversational_chain(vector_store)
     return chain
@@ -115,12 +115,26 @@ def createChatThread(chain):
 if __name__ == "__main__":
     print_json("message","process initiated")
     print_json("console",f"current directory: {os.getcwd()} ")
-    print_json("console","Enter the pdf link to summarize")
+    print_json("console","Enter the pdf link to summarize or Text to summarize")
     inputText = input()
-    print_json("console","Loading pdf...")
-    text=loadPdf(inputText)
+
+    inputText=json.loads(inputText)
+    if inputText["type"]=="pdf":
+        print_json("console","Loading pdf...")
+        text=loadPdf(inputText["path"])
+    else:
+        text=inputText["text"]
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size = 15)
+        pdf.cell(200, 10, txt = text, 
+                ln = 1, align = 'C')
+        
+        pdf.output("GFG.pdf") 
+        text=loadPdf("GFG.pdf")
+
     print_json("console","Creating conversational chain...")
-    chain=createChain(text)
+    chain=createChain(text,inputText["type"])
     print_json("console","Starting chat...")
     thread=createChatThread(chain)
     thread.start()

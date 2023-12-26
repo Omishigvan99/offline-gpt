@@ -1,7 +1,9 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import FileUploaderView from './FileUploaderView.jsx';
-import { useNavigate } from 'react-router-dom';
+import ImageUploadView from './ImageUploaderView.js';
+import { json, useNavigate } from 'react-router-dom';
 
 const fileTypes = ['pdf'];
 
@@ -11,6 +13,7 @@ const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoa
     const handleTextAreaChange = (event) => {
         setTextAreaValue(event.target.value);
     };
+    const [imageFile, setImageFile] = useState(null);
 
     let navigate = useNavigate();
 
@@ -19,6 +22,31 @@ const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoa
         selectedFile && setIsUploaded(true);
         textAreaValue && setIsUploaded(true);
         console.log('File selected:', selectedFile);
+    };
+
+    const handleChange = (event) => {
+        const file = event.target.files[0];
+        setImageFile(file);
+    };
+
+    const texthandler = () => {
+        console.log(textAreaValue);
+    };
+    const imageHandler = () => {
+        console.log(imageFile);
+    };
+
+    const buttonHandler = () => {
+        if (textAreaValue) {
+            setIsLoading(true);
+            window.electron.ipcRenderer.send(
+                'text',
+                JSON.stringify({
+                    text: textAreaValue,
+                }),
+            );
+            setIsUploaded(true);
+        }
     };
 
     //effect for handling file change (sending file to backend)
@@ -33,6 +61,11 @@ const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoa
             }),
         );
     }, [file]);
+
+    useEffect(() => {
+        if (!imageFile) return;
+        window.electron.ipcRenderer.send('ocr', imageFile.path);
+    }, [imageFile]);
 
     //registering event listener for file upload response
     useEffect(() => {
@@ -49,6 +82,10 @@ const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoa
                 setIsLoading(false);
                 navigate('/main_window/summarize');
             }
+        });
+
+        window.electron.ipcRenderer.on('ocrtext', (arg) => {
+            setTextAreaValue(arg);
         });
     }, []);
 
@@ -68,6 +105,40 @@ const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoa
         >
             <h1 style={{ marginBottom: '20px' }}>Drag and Drop Files</h1>
             <FileUploaderView onFileChange={handleFileChange} fileTypes={fileTypes} />
+            <hr
+                style={{
+                    borderBottom: '1px solid rgb(128 129 145 / 24%)',
+                    width: '100%',
+                    margin: ' 35px 0',
+                }}
+            ></hr>
+
+            <div className='image-container' style={{ width: '100%' }}>
+                <h1 style={{ marginBottom: '20px' }}>Upload Images</h1>
+                <ImageUploadView
+                    handleChange={handleChange}
+                    selectedFile={setImageFile}
+                    imageFile={imageFile}
+                />
+                Or
+                <textarea
+                    style={{
+                        marginTop: '20px',
+                        width: '100%',
+                        height: '220px',
+                        padding: '10px',
+                        borderRadius: '8px',
+                        border: '1px solid #ccc',
+                        resize: 'none',
+                    }}
+                    placeholder='Type your text here...'
+                    value={textAreaValue}
+                    onChange={handleTextAreaChange}
+                />
+                <button style={{ height: '30px' }} onClick={buttonHandler}>
+                    Upload
+                </button>
+            </div>
             <div style={{ marginTop: '20px', width: '100%', minHeight: '95px' }}>
                 {file && (
                     <>
@@ -76,20 +147,6 @@ const DragDropView = ({ setIsUploaded = () => {}, setIsLoading = () => {}, isLoa
                     </>
                 )}
             </div>
-            <textarea
-                style={{
-                    marginTop: '20px',
-                    width: '100%',
-                    height: 'auto',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    border: '1px solid #ccc',
-                    resize: 'none',
-                }}
-                placeholder='Type your text here...'
-                value={textAreaValue}
-                onChange={handleTextAreaChange}
-            />
         </div>
     );
 };

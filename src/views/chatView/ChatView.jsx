@@ -33,6 +33,7 @@ const ChatView = () => {
                         visible: index === prevMessages.length - 1 ? true : message.visible,
                     })),
                 );
+                setIsChatLoading(false);
             }, 50);
 
             // send msg to backend
