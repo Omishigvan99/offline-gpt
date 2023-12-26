@@ -25,13 +25,6 @@ const GrammarView = ({ setIsLoading = () => {}, isLoading }) => {
     }, [location.pathname]);
 
     useEffect(() => {
-        // window.electron.ipcRenderer.send(
-        //     'message',
-        //     JSON.stringify({
-        //         type: 'grammar',
-        //         text: 'Please review the provided context for grammar and syntax errors, ensuring clarity and coherence in communication. Additionally, reformat the text to enhance readability, considering proper paragraph structure, punctuation usage, and overall flow. Address any awkward phrasing or ambiguity in the language. Provide suggestions for improvement where necessary, and aim for a polished and well-organized final version of the context',
-        //     }),
-        // );
         window.electron.ipcRenderer.on('message', (arg) => {
             let { data } = JSON.parse(arg);
             setGrammar(data);
@@ -89,6 +82,7 @@ const GrammarView = ({ setIsLoading = () => {}, isLoading }) => {
                     onClick={() => {
                         console.log(data);
                         window.electron.ipcRenderer.send('grammar', data);
+                        setData('');
                     }}
                 >
                     <img src={send} />

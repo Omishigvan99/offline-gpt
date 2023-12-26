@@ -38,7 +38,12 @@ export function runScript(mainWindow) {
 
     ipcMain.on('file-upload', (event, arg) => {
         let data = JSON.parse(arg);
-        childProcess.stdin.write(data.file + '\n');
+        childProcess.stdin.write(JSON.stringify({ type: 'pdf', path: data.file }) + '\n');
+    });
+
+    ipcMain.on('text', (event, arg) => {
+        let data = JSON.parse(arg);
+        childProcess.stdin.write(JSON.stringify({ type: 'text', text: data.text }) + '\n'); //write to stdin of python script
     });
 
     ipcMain.on('message', (event, arg) => {
@@ -49,11 +54,11 @@ export function runScript(mainWindow) {
         childProcess.stdin.write(arg + '\n');
     });
 
-    registerGrammar();
-    registerOCR();
+    registerGrammar(mainWindow);
+    registerOCR(mainWindow);
 }
 
-function registerGrammar() {
+function registerGrammar(mainWindow) {
     ipcMain.on('grammar', (event, arg) => {
         console.log(arg);
         let childProcess = spawn('python', ['./src/python/grammar.py']);
@@ -78,27 +83,28 @@ function registerGrammar() {
     });
 }
 
-function registerOCR() {
+function registerOCR(mainWindow) {
     ipcMain.on('ocr', (event, arg) => {
         console.log(arg);
-        // let childProcess = spawn('python', ['./src/python/ocr.py']);
+        let childProcess = spawn('python', ['./src/python/ocr.py']);
+        // console.log(childProcess);
 
-        // childProcess.stdin.write(arg + '\n');
+        childProcess.stdout.on('data', (data) => {
+            console.log(data.toString());
+            mainWindow.webContents.send('ocrtext', data.toString());
+        });
 
-        // childProcess.stdout.on('data', (data) => {
-        //     mainWindow.webContents.send('message', data.toString());
-        // });
+        childProcess.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
 
-        // childProcess.stderr.on('data', (data) => {
-        //     console.error(`stderr: ${data}`);
-        // });
+        childProcess.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
 
-        // childProcess.on('close', (code) => {
-        //     console.log(`child process exited with code ${code}`);
-        // });
-
-        // childProcess.on('exit', (code) => {
-        //     console.log(`child process exited with code ${code}`);
-        // });
+        childProcess.on('exit', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+        childProcess.stdin.write(arg + '\n');
     });
 }
