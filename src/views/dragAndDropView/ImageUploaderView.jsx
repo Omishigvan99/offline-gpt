@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
 
-const ImageUploadView = ({ handleChange, setImageFile = () => {}, imageFile }) => {
+const ImageUploadView = ({ handleChange }) => {
     return (
         <div
             style={{

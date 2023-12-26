@@ -2,8 +2,8 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
 import FileUploaderView from './FileUploaderView.jsx';
-import ImageUploadView from './ImageUploaderView.js';
-import { json, useNavigate } from 'react-router-dom';
+import ImageUploadView from './ImageUploaderView.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const fileTypes = ['pdf'];
 
